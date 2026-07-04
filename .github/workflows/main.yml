@@ -12,8 +12,10 @@ jobs:
           
       - name: Install SDKs
         run: |
-          # تحميل الـ SDKs الرسمية المطلوبة للبناء
-          git clone https://github.com/theos/sdks.git ~/theos/sdks
+          # إذا كان المجلد موجوداً، لن نحمل SDKs جديدة لتجنب الخطأ
+          if [ ! -d "/home/runner/theos/sdks" ]; then
+            git clone https://github.com/theos/sdks.git ~/theos/sdks
+          fi
           
       - name: Build
         run: |
