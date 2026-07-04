@@ -12,17 +12,15 @@ jobs:
           
       - name: Install SDKs
         run: |
-          # تحميل الـ SDKs بشكل مباشر إلى المجلد الصحيح
+          # تنظيف أي مجلد موجود مسبقاً لضمان عدم حدوث خطأ
+          rm -rf ~/theos/sdks
           mkdir -p ~/theos/sdks
           git clone https://github.com/theos/sdks.git ~/theos/sdks
-          # تنظيف المجلد من أي ملفات غير ضرورية قد تعيق العملية
-          rm -rf ~/theos/sdks/.git
           
       - name: Build
         run: |
           export THEOS=/home/runner/theos
           export PATH=$THEOS/bin:$PATH
-          # تشغيل البناء مع توضيح المسارات
           make clean
           make
           
