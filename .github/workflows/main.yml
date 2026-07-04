@@ -5,27 +5,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Prepare Environment
+      - name: Prepare and Build
         run: |
-          # تنظيف أي مسارات قديمة لمنع خطأ 128
+          # تنظيف بيئة Theos بالكامل
           rm -rf ~/theos
           
-      - name: Install Theos and SDKs
-        run: |
-          # تحميل Theos مع المكونات الفرعية
+          # تحميل Theos
           git clone --recursive https://github.com/theos/theos.git ~/theos
-          # تحميل الـ SDKs داخل مجلد Theos
-          git clone https://github.com/theos/sdks.git ~/theos/sdks
           
-      - name: Build Tweak
-        run: |
-          # تصدير متغيرات البيئة الأساسية
+          # تحميل الـ SDKs في مجلد جديد ومختلف لتجنب التعارض
+          git clone https://github.com/theos/sdks.git ~/theos/sdks_new
+          
+          # توجيه Theos لاستخدام هذا المجلد الجديد
           export THEOS=/home/runner/theos
+          export THEOS_SDK_DIR=/home/runner/theos/sdks_new
           export PATH=$THEOS/bin:$PATH
           
-          # البناء النظيف
+          # البناء
           make clean
           make
           
