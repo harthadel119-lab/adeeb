@@ -12,15 +12,17 @@ jobs:
           
       - name: Install SDKs
         run: |
-          # إذا كان المجلد موجوداً، لن نحمل SDKs جديدة لتجنب الخطأ
-          if [ ! -d "/home/runner/theos/sdks" ]; then
-            git clone https://github.com/theos/sdks.git ~/theos/sdks
-          fi
+          # تحميل الـ SDKs بشكل مباشر إلى المجلد الصحيح
+          mkdir -p ~/theos/sdks
+          git clone https://github.com/theos/sdks.git ~/theos/sdks
+          # تنظيف المجلد من أي ملفات غير ضرورية قد تعيق العملية
+          rm -rf ~/theos/sdks/.git
           
       - name: Build
         run: |
           export THEOS=/home/runner/theos
           export PATH=$THEOS/bin:$PATH
+          # تشغيل البناء مع توضيح المسارات
           make clean
           make
           
