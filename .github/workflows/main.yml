@@ -8,23 +8,29 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Prepare and Build
+      - name: Prepare Environment
         run: |
-          # تنظيف بيئة Theos بالكامل
+          # 1. تنظيف شامل
           rm -rf ~/theos
           
-          # تحميل Theos
+          # 2. تحميل Theos
           git clone --recursive https://github.com/theos/theos.git ~/theos
           
-          # تحميل الـ SDKs في مجلد جديد ومختلف لتجنب التعارض
-          git clone https://github.com/theos/sdks.git ~/theos/sdks_new
+          # 3. تحميل الـ SDKs مباشرة داخل مجلد Theos الأساسي
+          # هذا يضمن أن Theos يراها تلقائياً بدون إعدادات إضافية
+          git clone https://github.com/theos/sdks.git ~/theos/sdks
           
-          # توجيه Theos لاستخدام هذا المجلد الجديد
+      - name: Build Tweak
+        run: |
+          # 4. إعداد متغيرات البيئة الأساسية
           export THEOS=/home/runner/theos
-          export THEOS_SDK_DIR=/home/runner/theos/sdks_new
           export PATH=$THEOS/bin:$PATH
           
-          # البناء
+          # 5. التفعيل الإجباري للـ SDKs
+          # قد تحتاج بعض إصدارات Theos لهذه الخطوة
+          ln -s ~/theos/sdks ~/theos/SDKs
+          
+          # 6. البناء
           make clean
           make
           
