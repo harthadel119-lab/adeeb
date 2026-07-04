@@ -5,27 +5,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+      - name: Install Theos Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang ldid
       - name: Install Theos
         run: |
           git clone --recursive https://github.com/theos/theos.git ~/theos
-          
-      - name: Install SDKs
-        run: |
-          # تنظيف أي مجلد موجود مسبقاً لضمان عدم حدوث خطأ
-          rm -rf ~/theos/sdks
-          mkdir -p ~/theos/sdks
-          git clone https://github.com/theos/sdks.git ~/theos/sdks
-          
-      - name: Build
+      - name: Build Tweak
         run: |
           export THEOS=/home/runner/theos
           export PATH=$THEOS/bin:$PATH
           make clean
           make
-          
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TheebVIP-Package
+          name: Tweak-Output
           path: ./.theos/obj/debug/*.dylib
