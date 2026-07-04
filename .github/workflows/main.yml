@@ -10,19 +10,20 @@ jobs:
 
       - name: Build Tweak
         run: |
-          # نستخدم مساراً مختلفاً كلياً باسم 'work_theos' لضمان عدم وجود تضارب
-          export THEOS=/home/runner/work_theos
+          # 1. إعداد مسار عمل فريد ومؤقت
+          export WORK_DIR=$(mktemp -d)
+          export THEOS=$WORK_DIR/theos
           
-          # تحميل Theos إلى المسار الجديد
+          # 2. تحميل Theos داخل المجلد المؤقت
           git clone --recursive https://github.com/theos/theos.git $THEOS
           
-          # تحميل SDKs إلى المجلد الصحيح داخل المسار الجديد
+          # 3. تحميل الـ SDKs داخل المجلد المؤقت
           git clone https://github.com/theos/sdks.git $THEOS/sdks
           
-          # إعداد PATH
+          # 4. إضافة مسار bin للـ Theos للـ PATH
           export PATH=$THEOS/bin:$PATH
           
-          # البناء
+          # 5. البناء
           make clean
           make
           
