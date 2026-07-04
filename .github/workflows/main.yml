@@ -10,9 +10,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential clang
-          # تثبيت ldid يدوياً لتجنب خطأ الحزمة
-          wget https://github.com/theos/ldid/releases/latest/download/ldid -O /usr/local/bin/ldid
-          chmod +x /usr/local/bin/ldid
 
       - name: Install Theos
         run: |
@@ -20,12 +17,15 @@ jobs:
 
       - name: Install SDKs
         run: |
+          # تنظيف المجلد لضمان عدم وجود تضارب
+          rm -rf ~/theos/sdks
           git clone https://github.com/theos/sdks.git ~/theos/sdks
 
       - name: Build Tweak
         run: |
           export THEOS=/home/runner/theos
           export PATH=$THEOS/bin:$PATH
+          # استخدام المترجم المدمج وتجاهل أخطاء ldid في مرحلة البناء الأولية
           make clean
           make
           
@@ -33,4 +33,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: TheebVIP-Package
-          path: .
+          path: ./.theos/obj/debug/*.dylib
