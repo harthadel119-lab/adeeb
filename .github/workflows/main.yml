@@ -5,25 +5,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Build Tweak
         run: |
-          # 1. إعداد مسار عمل فريد ومؤقت
-          export WORK_DIR=$(mktemp -d)
-          export THEOS=$WORK_DIR/theos
+          # إنشاء اسم مجلد عشوائي لكل عملية بناء
+          export BUILD_ID=$RANDOM
+          export THEOS=/tmp/theos_$BUILD_ID
+          export SDKS_DIR=/tmp/sdks_$BUILD_ID
           
-          # 2. تحميل Theos داخل المجلد المؤقت
+          # تحميل Theos والـ SDKs في مسارات فريدة لن تتكرر أبداً
           git clone --recursive https://github.com/theos/theos.git $THEOS
+          git clone https://github.com/theos/sdks.git $SDKS_DIR
           
-          # 3. تحميل الـ SDKs داخل المجلد المؤقت
-          git clone https://github.com/theos/sdks.git $THEOS/sdks
+          # ربط الـ SDKs داخل مجلد Theos الجديد
+          ln -s $SDKS_DIR $THEOS/sdks
           
-          # 4. إضافة مسار bin للـ Theos للـ PATH
+          # إعداد PATH والبناء
           export PATH=$THEOS/bin:$PATH
-          
-          # 5. البناء
           make clean
           make
           
