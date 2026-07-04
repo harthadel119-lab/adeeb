@@ -8,27 +8,31 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Prepare Environment
+      - name: Install Theos
         run: |
-          # تنظيف أي مسارات قديمة لـ Theos لضمان بيئة نظيفة
+          # تنظيف أي بيئة سابقة لضمان عدم وجود تضارب
           rm -rf ~/theos
-          
-      - name: Install Theos and SDKs
-        run: |
-          # تحميل Theos
+          # تحميل Theos مع المكونات الفرعية
           git clone --recursive https://github.com/theos/theos.git ~/theos
-          # تحميل الـ SDKs داخل مجلد Theos
+          
+      - name: Install SDKs
+        run: |
+          # التأكد من وجود مجلد الـ SDKs وتنزيلها
+          mkdir -p ~/theos/sdks
           git clone https://github.com/theos/sdks.git ~/theos/sdks
           
       - name: Build Tweak
         run: |
-          # إعداد متغيرات البيئة
+          # تصدير المسارات الضرورية للبناء
           export THEOS=/home/runner/theos
           export PATH=$THEOS/bin:$PATH
           
-          # تنفيذ عملية البناء
+          # البناء النظيف
           make clean
           make
           
-      - name: Upload Output
-        uses
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TheebVIP-Package
+          path: ./.theos/obj/debug/*.dylib
